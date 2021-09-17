@@ -1,10 +1,10 @@
 ﻿namespace Isu.Services
 {
-    public class Id
+    public class IdGenerator
     {
         private int _serialNumber = 0;
 
-        public int GetId()
+        public int GenerateId()
         {
             _serialNumber++;
             return _serialNumber;

@@ -9,7 +9,8 @@ namespace Isu.Services
 
         public IsuGroupName(string name)
         {
-            Name = GetParsedName(name);
+            ParseString(name);
+            Name = name;
         }
 
         public string Name { get; }
@@ -21,12 +22,6 @@ namespace Isu.Services
         public IsuGroupNumber GetGroupNumber()
         {
             return _groupNumber;
-        }
-
-        private string GetParsedName(string name)
-        {
-            ParseString(name);
-            return name;
         }
 
         private void ParseString(string name)

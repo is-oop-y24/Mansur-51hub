@@ -7,18 +7,18 @@ namespace Isu.Services
     public class BasicIsuService : IIsuService
     {
         private readonly List<Group> _groups;
-        private readonly Id _id;
+        private readonly IdGenerator _id;
 
         public BasicIsuService()
         {
             _groups = new List<Group>();
-            _id = new Id();
+            _id = new IdGenerator();
         }
 
         public BasicIsuService(List<Group> groups)
         {
             _groups = new List<Group>(groups);
-            _id = new Id();
+            _id = new IdGenerator();
         }
 
         public Group AddGroup(string name)
@@ -36,14 +36,14 @@ namespace Isu.Services
 
         public Student AddStudent(Group group, string name)
         {
-            Group gGroup = FindGroup(group.GroupName.Name);
-            if (gGroup == null)
+            Group expectedGroup = FindGroup(group.GroupName.Name);
+            if (expectedGroup == null)
             {
                 throw new IsuException($"No such group in ISU: {group.GroupName.Name}");
             }
 
-            var student = new Student(_id.GetId(), name, group.GroupName.Name);
-            return gGroup.AddStudent(student);
+            var student = new Student(_id.GenerateId(), name, group.GroupName.Name);
+            return expectedGroup.AddStudent(student);
         }
 
         public Group FindGroup(string groupName)
@@ -54,9 +54,9 @@ namespace Isu.Services
 
         public List<Group> FindGroups(CourseNumber courseNumber)
         {
-            IEnumerable<Group> groups = _groups.Where(p => p.GetCourse().Number ==
-                                                           courseNumber.Number);
-            return groups.ToList();
+            return _groups
+                         .Where(p => p.GetCourse().Number == courseNumber.Number)
+                         .ToList();
         }
 
         public Student FindStudent(int id)
@@ -88,7 +88,15 @@ namespace Isu.Services
 
         public Student GetStudent(int id)
         {
-            return (from @group in _groups where @group.FindStudent(id) != null select @group.FindStudent(id)).FirstOrDefault();
+            foreach (Group group in _groups)
+            {
+                if (group.FindStudent(id) != null)
+                {
+                    return group.FindStudent(id);
+                }
+            }
+
+            return null;
         }
 
         public void ChangeStudentGroup(Student student, Group newGroup)

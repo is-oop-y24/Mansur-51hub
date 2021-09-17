@@ -2,25 +2,25 @@
 
 namespace Isu.Services
 {
-    public class IsuGroupNumber : IsuNumber
+    public class IsuGroupNumber
     {
+        private const int MinGroupNumber = 1;
+        private const int MaxGroupNumber = 12;
         public IsuGroupNumber(int number)
         {
-            _ = IsCorrectNumber(number);
+            if (!IsCorrectNumber(number))
+            {
+                throw new IsuException($"Group number out of range. Range: from {MinGroupNumber} to {MaxGroupNumber}");
+            }
+
             Number = number;
         }
 
-        public sealed override bool IsCorrectNumber(int number)
+        public int Number { get; }
+
+        public static bool IsCorrectNumber(int number)
         {
-            const int minGroupNumber = 0;
-            const int maxGroupNumber = 12;
-
-            if (number is >= minGroupNumber and <= maxGroupNumber)
-            {
-                return true;
-            }
-
-            throw new IsuException($"Group number out of range. Range: from {minGroupNumber} to {maxGroupNumber}");
+            return number is >= MinGroupNumber and <= MaxGroupNumber;
         }
     }
 }

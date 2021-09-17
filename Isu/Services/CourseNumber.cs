@@ -2,22 +2,26 @@
 
 namespace Isu.Services
 {
-    public class CourseNumber : IsuNumber
+    public class CourseNumber
     {
+        private const int FirstYear = 1;
+        private const int LastYear = 4;
+
         public CourseNumber(int number)
         {
-            _ = IsCorrectNumber(number);
+            if (!IsCorrectNumber(number))
+            {
+                throw new IsuException($"Course number out of range. Range: from {FirstYear} to {LastYear}");
+            }
+
             Number = number;
         }
 
-        public sealed override bool IsCorrectNumber(int number)
-        {
-            const int firstYear = 1;
-            const int lastYear = 4;
+        public int Number { get; }
 
-            if (number is >= firstYear and <= lastYear)
-                return true;
-            throw new IsuException($"Course number out of range. Range: from {firstYear} to {lastYear}");
+        public static bool IsCorrectNumber(int number)
+        {
+            return number is >= FirstYear and <= LastYear;
         }
     }
 }
