@@ -96,7 +96,7 @@ namespace Isu.Services
                 }
             }
 
-            return null;
+            throw new IsuException($"There is no student with id: {id} in Isu");
         }
 
         public void ChangeStudentGroup(Student student, Group newGroup)
