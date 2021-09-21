@@ -21,7 +21,7 @@ namespace Isu.Tests
             {
                 _isuService.AddGroup("M3201");
                 _isuService.AddStudent(new Group("M3201"), "student");
-                Student student = new Student(1, "student", "M3201");
+                var student = new Student(1, "student", "M3201");
                 _isuService.ChangeStudentGroup(student, new Group("M3201"));
                 Assert.Fail();
             }
@@ -36,7 +36,7 @@ namespace Isu.Tests
         {
             Assert.Catch<IsuException>(() =>
             {
-                Group group = new Group("M3201");
+                var group = new Group("M3201");
                 _isuService.AddGroup("M3201");
                 for (int i = 0; i < 31; i++)
                 {
@@ -49,8 +49,7 @@ namespace Isu.Tests
         public void CreateGroupWithInvalidName_ThrowException()
         {
             Assert.Catch<IsuException>(() =>
-            {
-                Group group = new Group("M32011");
+            {  var group = new Group("M32011");
             });
         }
 
@@ -61,9 +60,9 @@ namespace Isu.Tests
             {
                 _isuService.AddGroup("M3201");
                 _isuService.AddGroup("M3301");
-                Group newGroup = new Group("M3301");
+                var newGroup = new Group("M3301");
                 _isuService.AddStudent(new Group("M3201"), "student");
-                Student student = new Student(1, "student", "M3201");
+                var student = new Student(1, "student", "M3201");
                 _isuService.ChangeStudentGroup(student, newGroup);
                 _isuService.FindGroup("M3201").RemoveStudent(student);
             });
