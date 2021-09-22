@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using Shops.Tools;
 
@@ -6,55 +7,57 @@ namespace Shops.Services
 {
     public class Store
     {
+        private readonly List<Product> _products;
         public Store(int id, string name, Address address)
         {
             Id = id;
-            Name = name;
+            Name = name ?? throw new ArgumentNullException(nameof(name));
             Address = address;
-            Products = new List<Product>();
+            _products = new List<Product>();
         }
 
         public int Id { get; }
         public string Name { get; }
         public Address Address { get; }
-        public List<Product> Products { get; }
 
         public Product FindProduct(int productId)
         {
-            return Products.SingleOrDefault(p => p.Id.Equals(productId));
+            return _products.SingleOrDefault(p => p.Id.Equals(productId));
         }
 
         public void AddProduct(Product product)
         {
-            if (FindProduct(product.Id) == null)
+            Product requiredProduct = FindProduct(product.Id);
+            if (requiredProduct == null)
             {
-                Products.Add(product);
+                _products.Add(product);
                 return;
             }
 
-            Product existingProduct = FindProduct(product.Id);
-            existingProduct.Count += product.Count;
-            existingProduct.Price = product.Price;
+            requiredProduct.Count += product.Count;
+            requiredProduct.Price = product.Price;
         }
 
         public void ChangeProductPrice(int productId, double newPrice)
         {
-            if (FindProduct(productId) == null)
+            Product requiredProduct = FindProduct(productId);
+            if (requiredProduct == null)
             {
                 throw new ShopsException($"No such product with id: {productId} in store '{Name}'");
             }
 
-            FindProduct(productId).Price = newPrice;
+            requiredProduct.Price = newPrice;
         }
 
         public double GetProductPrice(int productId)
         {
-            if (FindProduct(productId) == null)
+            Product requiredProduct = FindProduct(productId);
+            if (requiredProduct == null)
             {
                 throw new ShopsException($"There is no product with id: {productId} in shop with name: {Name} and id {Id}");
             }
 
-            return FindProduct(productId).Price;
+            return requiredProduct.Price;
         }
 
         public void BuyProducts(List<Product> products, Person person)
@@ -87,20 +90,7 @@ namespace Shops.Services
 
         public bool ContainsProducts(List<Product> products)
         {
-            foreach (Product product in products)
-            {
-                if (FindProduct(product.Id) == null)
-                {
-                    return false;
-                }
-
-                if (FindProduct(product.Id).Count < product.Count)
-                {
-                    return false;
-                }
-            }
-
-            return true;
+            return products.FirstOrDefault(p => (FindProduct(p.Id) == null) || (FindProduct(p.Id).Count < p.Count)) == null;
         }
 
         public bool TryCalculateTotalAmount(List<Product> products, out double totalAmount)
@@ -113,6 +103,21 @@ namespace Shops.Services
 
             totalAmount = products.Sum(product => FindProduct(product.Id).Price * product.Count);
             return true;
+        }
+
+        public double GetTotalAmount(List<Product> products)
+        {
+            if (!ContainsProducts(products))
+            {
+                throw new ShopsException($"There are not enough products in store with id {Id}");
+            }
+
+            return products.Sum(product => FindProduct(product.Id).Price * product.Count);
+        }
+
+        public List<Product> GetProducts()
+        {
+            return _products;
         }
     }
 }

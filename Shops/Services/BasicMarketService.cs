@@ -9,16 +9,15 @@ namespace Shops.Services
         private readonly List<Store> _stores;
         private readonly IdGenerator _storeIdGenerator;
         private readonly IdGenerator _productIdGenerator;
+        private readonly List<RegisteredProductInService> _products;
 
         public BasicMarketService()
         {
             _stores = new List<Store>();
             _storeIdGenerator = new IdGenerator();
             _productIdGenerator = new IdGenerator();
-            Products = new List<RegisteredProductInService>();
+            _products = new List<RegisteredProductInService>();
         }
-
-        public List<RegisteredProductInService> Products { get; }
 
         public RegisteredProductInService RegisterProduct(string name)
         {
@@ -28,13 +27,14 @@ namespace Shops.Services
             }
 
             var newProduct = new RegisteredProductInService(_productIdGenerator.GenerateId(), name);
-            Products.Add(newProduct);
+            _products.Add(newProduct);
             return newProduct;
         }
 
         public void DeliverProductsToStore(List<Product> products, int storeId)
         {
-            if (FindStore(storeId) == null)
+            Store requiredStore = FindStore(storeId);
+            if (requiredStore == null)
             {
                 throw new ShopsException($"There is no store with store id {storeId} in market service");
             }
@@ -46,46 +46,45 @@ namespace Shops.Services
                     throw new ShopsException($"There is no registered product with id {product.Id} in market service");
                 }
 
-                FindStore(storeId).AddProduct(product);
+                requiredStore.AddProduct(product);
             }
         }
 
         public void BuyProducts(List<Product> products, int storeId, Person person)
         {
-            if (FindStore(storeId) == null)
+            Store requiredStore = FindStore(storeId);
+            if (requiredStore == null)
             {
                 throw new ShopsException($"There is no store with id {storeId} in market service");
             }
 
             CheckAreProductsRegistered(products);
 
-            FindStore(storeId).BuyProducts(products, person);
+            requiredStore.BuyProducts(products, person);
         }
 
         public Store FindTheCheapestStore(List<Product> products)
         {
-            double minimalAmount = double.MaxValue;
-            Store cheapestStore = null;
-
-            foreach (Store store in _stores)
+            var suitableStores =
+                _stores.Where(p => p.TryCalculateTotalAmount(products, out double amount)).ToList();
+            if (suitableStores.Count == 0)
             {
-                if (!store.TryCalculateTotalAmount(products, out double currentAmount)) continue;
-                if (currentAmount.CompareTo(minimalAmount) >= decimal.Zero) continue;
-                minimalAmount = currentAmount;
-                cheapestStore = store;
+                return null;
             }
 
-            return cheapestStore;
+            return suitableStores.Aggregate((store1, store2) =>
+                store1.GetTotalAmount(products) < store2.GetTotalAmount(products) ? store1 : store2);
         }
 
         public List<Product> GetProducts(int storeId)
         {
-            if (FindStore(storeId) == null)
+            Store requiredStore = FindStore(storeId);
+            if (requiredStore == null)
             {
                 throw new ShopsException($"There is no store with id {storeId} in market service");
             }
 
-            return FindStore(storeId).Products;
+            return requiredStore.GetProducts();
         }
 
         public List<Store> GetStores()
@@ -95,7 +94,7 @@ namespace Shops.Services
 
         public List<RegisteredProductInService> GetRegisteredProducts()
         {
-            return Products;
+            return _products;
         }
 
         public Store AddStore(string name, Address address)
@@ -130,12 +129,12 @@ namespace Shops.Services
 
         public RegisteredProductInService FindRegisteredProductInService(string name)
         {
-            return Products.FirstOrDefault(p => p.Name.Equals(name));
+            return _products.FirstOrDefault(p => p.Name.Equals(name));
         }
 
         public RegisteredProductInService FindRegisteredProductInService(int productId)
         {
-            return Products.FirstOrDefault(p => p.Id.Equals(productId));
+            return _products.FirstOrDefault(p => p.Id.Equals(productId));
         }
 
         private void CheckAreProductsRegistered(List<Product> products)

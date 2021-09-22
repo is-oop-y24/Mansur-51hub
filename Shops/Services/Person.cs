@@ -1,10 +1,12 @@
-﻿namespace Shops.Services
+﻿using System;
+
+namespace Shops.Services
 {
     public class Person
     {
         public Person(string name, double cash)
         {
-            Name = name;
+            Name = name ?? throw new ArgumentNullException(nameof(name));
             Cash = cash;
         }
 

@@ -1,4 +1,5 @@
-﻿using Shops.Tools;
+﻿using System;
+using Shops.Tools;
 
 namespace Shops.Services
 {
@@ -7,7 +8,12 @@ namespace Shops.Services
         public Product(int id, string name, double price, int count)
         {
             Id = id;
-            Name = name;
+            Name = name ?? throw new ArgumentNullException(nameof(name));
+            if (count < 0)
+            {
+                throw new ShopsException("Count can not be o negative number");
+            }
+
             Count = count;
             if (Price.CompareTo(0) < 0)
             {

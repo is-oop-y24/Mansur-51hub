@@ -19,7 +19,7 @@ namespace Shops.Tests
         public void RegisterProductInService_ServiceContainsProduct()
         {
             _marketService.RegisterProduct("Milka");
-            Assert.AreNotEqual(_marketService.FindRegisteredProductInService("Milka"), null);
+            Assert.IsNotNull(_marketService.FindRegisteredProductInService("Milka"));
         }
 
         [Test]
@@ -72,7 +72,7 @@ namespace Shops.Tests
             _marketService.DeliverProductsToStore(products, storeId);
 
             Store store = _marketService.GetStore(storeId);
-            Assert.AreEqual(true, store.ContainsProducts(products));
+            Assert.IsTrue(store.ContainsProducts(products));
 
             double cash = 15000;
             var person = new Person("Itmo first course student", cash);
@@ -116,7 +116,7 @@ namespace Shops.Tests
 
                 var person = new Person("Itmo second year student", 200);
                 Store store = _marketService.FindTheCheapestStore(products);
-                Assert.AreNotEqual(null, store);
+                Assert.IsNotNull(store);
                 store.BuyProducts(products, person);
             });
         }
@@ -171,7 +171,7 @@ namespace Shops.Tests
             _marketService.DeliverProductsToStore(deliveredProducts, storeId);
 
             Store store = _marketService.FindTheCheapestStore(products);
-            Assert.AreEqual(null, store);
+            Assert.IsNull(store);
         }
     }
 }
