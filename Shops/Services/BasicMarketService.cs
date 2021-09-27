@@ -66,7 +66,7 @@ namespace Shops.Services
         public Store FindTheCheapestStore(List<Product> products)
         {
             var suitableStores =
-                _stores.Where(p => p.TryCalculateTotalAmount(products, out double amount)).ToList();
+                _stores.Where(p => p.TryCalculateTotalAmount(products, out double amount) == true).ToList();
             if (suitableStores.Count == 0)
             {
                 return null;
@@ -76,7 +76,7 @@ namespace Shops.Services
                 store1.GetTotalAmount(products) < store2.GetTotalAmount(products) ? store1 : store2);
         }
 
-        public List<Product> GetProducts(int storeId)
+        public IReadOnlyList<Product> GetProducts(int storeId)
         {
             Store requiredStore = FindStore(storeId);
             if (requiredStore == null)
@@ -87,7 +87,7 @@ namespace Shops.Services
             return requiredStore.GetProducts();
         }
 
-        public List<Store> GetStores()
+        public IReadOnlyList<Store> GetStores()
         {
             return _stores;
         }

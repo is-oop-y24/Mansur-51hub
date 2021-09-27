@@ -15,8 +15,8 @@ namespace Shops.Services
         void BuyProducts(List<Product> products, int storeId, Person person);
         Store FindTheCheapestStore(List<Product> products);
 
-        List<Product> GetProducts(int storeId);
-        List<Store> GetStores();
+        IReadOnlyList<Product> GetProducts(int storeId);
+        IReadOnlyList<Store> GetStores();
         List<RegisteredProductInService> GetRegisteredProducts();
         RegisteredProductInService FindRegisteredProductInService(string name);
         RegisteredProductInService FindRegisteredProductInService(int productId);

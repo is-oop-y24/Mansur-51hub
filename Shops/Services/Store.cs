@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using Shops.Tools;
 
 namespace Shops.Services
@@ -90,7 +91,11 @@ namespace Shops.Services
 
         public bool ContainsProducts(List<Product> products)
         {
-            return products.FirstOrDefault(p => (FindProduct(p.Id) == null) || (FindProduct(p.Id).Count < p.Count)) == null;
+            return products.FirstOrDefault(p =>
+            {
+                Product productInStore = FindProduct(p.Id);
+                return productInStore == null || productInStore.Count < p.Count;
+            }) == null;
         }
 
         public bool TryCalculateTotalAmount(List<Product> products, out double totalAmount)
