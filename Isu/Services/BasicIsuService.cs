@@ -116,5 +116,10 @@ namespace Isu.Services
             findingGroup.AddStudent(new Student(student.Id, student.Name, newGroup.GroupName.Name));
             FindGroup(student.GroupName).RemoveStudent(student);
         }
+
+        public IReadOnlyList<Group> GetGroups()
+        {
+            return _groups;
+        }
     }
 }
