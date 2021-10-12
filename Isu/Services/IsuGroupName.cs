@@ -1,4 +1,5 @@
-﻿using Isu.Tools;
+﻿using System.Collections.Generic;
+using Isu.Tools;
 
 namespace Isu.Services
 {
@@ -14,6 +15,7 @@ namespace Isu.Services
         }
 
         public string Name { get; }
+
         public CourseNumber GetCourseNumber()
         {
             return _courseNumber;
@@ -33,11 +35,26 @@ namespace Isu.Services
                     $"Unexpected length of group name. Expected: {groupNameLength}, Got: {name.Length}");
             }
 
-            const string template = "M3";
             string beginning = name[..2];
-            if (!template.Equals(beginning))
+            var templates = new List<string>()
             {
-                throw new IsuException($"Unexpected start of group name. Expected: {template}, Got: {name[..2]}");
+                "N3",
+                "P3",
+                "R3",
+                "H3",
+                "W3",
+                "O3",
+                "B3",
+                "T3",
+                "L3",
+                "Z3",
+                "K3",
+                "M3",
+            };
+
+            if (templates.TrueForAll(p => !p.Equals(beginning)))
+            {
+                throw new IsuException($"Unexpected start of group name");
             }
 
             int courseNumber = int.Parse(name.Substring(2, 1));

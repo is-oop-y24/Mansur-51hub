@@ -14,6 +14,7 @@ namespace Isu.Services
 
            Group FindGroup(string groupName);
            List<Group> FindGroups(CourseNumber courseNumber);
+           IReadOnlyList<Group> GetGroups();
 
            void ChangeStudentGroup(Student student, Group newGroup);
     }

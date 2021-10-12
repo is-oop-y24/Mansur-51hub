@@ -1,31 +1,32 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
+using Isu.Services;
 using Isu.Tools;
+using IsuExtra.Services.ScheduleService;
+using IsuExtra.Services.Tools;
 
-namespace Isu.Services
+namespace IsuExtra.Services.OgnpService
 {
-    public class Group
+    public class StudyStream
     {
-        public Group(string name)
+        public StudyStream(string name, StreamNumber streamNumber, Classes classes, DayOfWeek dayOfWeek)
         {
-            GroupName = new IsuGroupName(name);
+            StreamName = new IsuStreamName(name, streamNumber);
             Students = new List<Student>();
+            Classes = classes;
+            DayOfWeek = dayOfWeek;
         }
 
-        public IsuGroupName GroupName { get; }
+        public IsuStreamName StreamName { get; }
 
         public List<Student> Students { get; }
 
-        public int MaxNumberOfStudents { get; } = 30;
-        public CourseNumber GetCourse()
-        {
-            return GroupName.GetCourseNumber();
-        }
+        public Classes Classes { get; }
 
-        public IsuGroupNumber GetGroupNumber()
-        {
-            return GroupName.GetGroupNumber();
-        }
+        public DayOfWeek DayOfWeek { get; }
+
+        public int MaxNumberOfStudents { get; } = 30;
 
         public Student FindStudent(string name)
         {
@@ -45,14 +46,19 @@ namespace Isu.Services
             return studentInGroup;
         }
 
+        public bool Contains(int studentId)
+        {
+            return FindStudent(studentId) != null;
+        }
+
         public Student AddStudent(Student student)
         {
             if (FindStudent(student) != null)
                 throw new IsuException($"Student with name {student.Name} and id {student.Id} is already in group");
             if (Students.Count.Equals(MaxNumberOfStudents))
             {
-                throw new IsuException(
-                    $"Too many students in group {GroupName.Name}, maximal number is {MaxNumberOfStudents}");
+                throw new IsuExtraException(
+                    $"Too many students in group {StreamName.Name}, maximal number is {MaxNumberOfStudents}");
             }
 
             Students.Add(student);
@@ -64,8 +70,8 @@ namespace Isu.Services
             Student removingStudent = FindStudent(student);
             if (removingStudent == null)
             {
-                throw new IsuException(
-                    $"There is no student with name {student.Name} and id {student.Id} in group {GroupName.Name}");
+                throw new IsuExtraException(
+                    $"There is no student with name {student.Name} and id {student.Id} in group {StreamName.Name}");
             }
 
             Students.Remove(removingStudent);
