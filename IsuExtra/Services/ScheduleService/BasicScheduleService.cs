@@ -39,7 +39,7 @@ namespace IsuExtra.Services.ScheduleService
                 return;
             }
 
-            existingScheduleForGroup.WeeklySchedule.ChangeWeeklySchedule(newWeeklySchedule.GetWeeklySchedule().ToList());
+            existingScheduleForGroup.SetGroupSchedule(newWeeklySchedule);
         }
 
         private WeeklyScheduleForGroup FindGroupSchedule(IsuGroupName groupName)

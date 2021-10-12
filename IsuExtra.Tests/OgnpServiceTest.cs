@@ -1,11 +1,11 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using Isu.Services;
 using IsuExtra.Services.OgnpService;
 using IsuExtra.Services.ScheduleService;
 using IsuExtra.Services.Tools;
 using NUnit.Framework;
-using DayOfWeek = IsuExtra.Services.ScheduleService.DayOfWeek;
 
 namespace IsuExtra.Tests
 {

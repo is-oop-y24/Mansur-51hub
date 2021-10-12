@@ -11,6 +11,11 @@ namespace IsuExtra.Services.ScheduleService
         }
 
         public IsuGroupName GroupName { get; }
-        public WeeklySchedule WeeklySchedule { get; }
+        public WeeklySchedule WeeklySchedule { get; private set; }
+
+        public void SetGroupSchedule(WeeklySchedule weeklySchedule)
+        {
+            WeeklySchedule = weeklySchedule;
+        }
     }
 }
