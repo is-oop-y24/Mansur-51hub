@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.IO;
 using System.IO.Compression;
 using System.Linq;
@@ -10,22 +9,18 @@ namespace Backups.Services
     {
         private string _restorePointDirectory;
         private string _restorePointFullDirectory;
-        public RestorePoint CreateRestorePoint(List<JobObjectInBackupJob> jobObjects, IRepository repository, int index, string jobDirectory)
+        public void CreateRestorePoint(List<JobObjectInBackupJob> jobObjects, IRepository repository, int index, string jobDirectory)
         {
             var fileBuffer = new SystemFileBuffer();
-            var restorePoint = new RestorePoint(DateTime.Now);
+            repository.CreateDirectory(jobDirectory);
 
             jobObjects.ForEach(jobObject =>
             {
-                var storage = new Storage(jobObject.JobObject);
-                restorePoint.AddStorage(storage);
                 MakeZipObject(jobObject, fileBuffer, index, jobDirectory);
             });
 
             repository.SaveFiles(_restorePointFullDirectory, _restorePointDirectory);
             fileBuffer.Clear();
-
-            return restorePoint;
         }
 
         private void MakeZipObject(JobObjectInBackupJob jobObject, SystemFileBuffer fileBuffer, int index, string jobDirectory)

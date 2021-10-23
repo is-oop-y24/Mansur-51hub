@@ -5,14 +5,15 @@ namespace Backups.Services
 {
     public class RestorePoint
     {
-        private readonly DateTime _date;
         private readonly List<Storage> _jobObjectStorages;
 
         public RestorePoint(DateTime date)
         {
-            _date = date;
+            Date = date;
             _jobObjectStorages = new List<Storage>();
         }
+
+        public DateTime Date { get; }
 
         public void AddStorage(Storage storage)
         {

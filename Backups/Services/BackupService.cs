@@ -8,16 +8,13 @@ namespace Backups.Services
     public class BackupService : IBackupService
     {
         private readonly List<IBackupJob> _backupJobs;
-        private readonly IRepository _repository;
         private readonly string _rootDirectory;
 
-        public BackupService(IRepository repository)
+        public BackupService()
         {
             _backupJobs = new List<IBackupJob>();
-            _repository = repository;
 
             _rootDirectory = $"{DateTime.Now:yy-MM-dd}";
-            _repository.CreateDirectory(@$"{_rootDirectory}");
         }
 
         public void CreateBackupJob(string jobName)
@@ -27,7 +24,7 @@ namespace Backups.Services
                 throw new BackupsException($"Job with name {jobName} already exist");
             }
 
-            _backupJobs.Add(new BackupJob(jobName, _repository, _rootDirectory));
+            _backupJobs.Add(new BackupJob(jobName, _rootDirectory));
         }
 
         public IBackupJob GetBackupJob(string jobName)

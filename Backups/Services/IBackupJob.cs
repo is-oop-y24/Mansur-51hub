@@ -4,7 +4,7 @@ namespace Backups.Services
 {
     public interface IBackupJob
     {
-        void CreateRestorePoint(IAlgorithmForCreatingBackups algorithm);
+        void CreateRestorePoint(IAlgorithmForCreatingBackups algorithm, IRepository repository);
         void AddObject(IJobObject jobObject);
         void DeleteObject(int jobObjectId);
         IReadOnlyList<RestorePoint> GetRestorePoints();
