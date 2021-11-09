@@ -145,7 +145,6 @@ namespace Banks.Services.Bank
         {
             return _bankAccounts
                 .Any(account => account.GetTransactions()
-                    .ToList()
                     .Any(transaction => transaction.GetTransactionId().Equals(transactionId)));
         }
     }

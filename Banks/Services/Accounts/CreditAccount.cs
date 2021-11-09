@@ -98,12 +98,6 @@ namespace Banks.Services.Accounts
             _transactionsHistory.Remove(transaction);
         }
 
-        public bool HasLimit()
-        {
-            const bool hasLimit = true;
-            return hasLimit;
-        }
-
         public void SetBalance(double newBalance)
         {
             _balance = newBalance;

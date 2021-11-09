@@ -72,7 +72,7 @@ namespace Banks.Services.Accounts
 
         public void IncrementANumberOfNegativeBalanceUsedTimes()
         {
-            throw new NotImplementedException();
+            throw new NotSupportedException();
         }
 
         public Guid GetId()
@@ -115,12 +115,6 @@ namespace Banks.Services.Accounts
         public void CancelTransaction(ITransactionOperation transaction)
         {
             _transactionsHistory.Remove(transaction);
-        }
-
-        public bool HasLimit()
-        {
-            const bool hasLimit = false;
-            return hasLimit;
         }
 
         public void SetBalance(double newBalance)

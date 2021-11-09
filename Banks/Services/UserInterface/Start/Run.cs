@@ -13,6 +13,11 @@ namespace Banks.Services.UserInterface.Start
             _centralBank = centralBank;
         }
 
+        public Run()
+        {
+            _centralBank = new CentralBank.CentralBank();
+        }
+
         public static string GetApplicationMode()
         {
             const string modeChoosing = "Please, choose the application mode";

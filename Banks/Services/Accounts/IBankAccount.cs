@@ -10,7 +10,6 @@ namespace Banks.Services.Accounts
         IClient GetClient();
         double GetBalance();
         bool CouldBeNegativeBalance();
-        bool HasLimit();
         bool CanWithdrawOrTransferMoney();
         bool IsTheAccountSuspicious();
         IReadOnlyList<ITransactionOperation> GetTransactions();
