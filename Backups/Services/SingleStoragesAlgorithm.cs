@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.IO.Compression;
 using System.Linq;
@@ -21,13 +22,18 @@ namespace Backups.Services
             fileBuffer.Clear();
         }
 
+        public void CreateRestorePointExtra(List<JobObjectInBackupJob> jobObjects, IRepository repository, string jobDirectory, string rootDirectory, string jobName, int pointsCount)
+        {
+            throw new NotSupportedException();
+        }
+
         private void MakeZipObject(List<JobObjectInBackupJob> jobObjects, SystemFileBuffer fileBuffer, int index, string jobDirectory)
         {
             _restorePointDirectory = @$"{jobDirectory}\Restore_point_{index}";
-            _restorePointFullDirectory = $@"{fileBuffer.DirectoryName}\{_restorePointDirectory}";
+            _restorePointFullDirectory = $@"{SystemFileBuffer.DirectoryName}\{_restorePointDirectory}";
             fileBuffer.CreateDirectory(_restorePointDirectory);
 
-            string objectsDirectory = @$"{fileBuffer.DirectoryName}\{jobDirectory}\Objects";
+            string objectsDirectory = @$"{SystemFileBuffer.DirectoryName}\{jobDirectory}\Objects";
             fileBuffer.CreateDirectory($@"{jobDirectory}\Objects");
 
             jobObjects.ForEach(jobObject =>

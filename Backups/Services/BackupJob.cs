@@ -10,27 +10,39 @@ namespace Backups.Services
         private readonly IdGenerator _idGenerator;
         private readonly List<JobObjectInBackupJob> _jobObjects;
         private readonly List<RestorePoint> _restorePoints;
-        private readonly string _name;
-        private readonly string _jobDirectory;
         private int _index;
         public BackupJob(string name, string rootDirectory)
         {
-            _name = name ?? throw new ArgumentNullException(nameof(name));
+            Name = name ?? throw new ArgumentNullException(nameof(name));
             _idGenerator = new IdGenerator();
             _jobObjects = new List<JobObjectInBackupJob>();
             _restorePoints = new List<RestorePoint>();
-            _jobDirectory = $@"{rootDirectory}\{name}";
+            JobDirectory = $@"{rootDirectory}\{name}";
+            RootDirectory = rootDirectory;
             _index = 0;
         }
 
-        public void AddObject(IJobObject jobObject)
+        public string Name { get; }
+        public string JobDirectory { get; }
+        public string RootDirectory { get; }
+
+        public void CreateRestorePointInRepository(IAlgorithmForCreatingBackups algorithm, IRepository repository)
         {
-            _jobObjects.Add(new JobObjectInBackupJob(_idGenerator.GenerateId(), jobObject));
+            CreateRestorePoint();
+            algorithm.CreateRestorePoint(_jobObjects, repository, _index, JobDirectory);
         }
 
-        public void CreateRestorePoint(IAlgorithmForCreatingBackups algorithm, IRepository repository)
+        public void CreateRestorePoint()
         {
-            _index++;
+            if (_index < _restorePoints.Count)
+            {
+                _index = _restorePoints.Count;
+            }
+            else
+            {
+                _index++;
+            }
+
             var newRestorePoint = new RestorePoint(DateTime.Now);
             _jobObjects.ForEach(jobObject =>
             {
@@ -38,7 +50,16 @@ namespace Backups.Services
             });
 
             _restorePoints.Add(newRestorePoint);
-            algorithm.CreateRestorePoint(_jobObjects, repository, _index, _jobDirectory);
+        }
+
+        public void CreateRestorePoint(RestorePoint newRestorePoint)
+        {
+            _restorePoints.Add(newRestorePoint);
+        }
+
+        public void AddObject(JobObject jobObject)
+        {
+            _jobObjects.Add(new JobObjectInBackupJob(_idGenerator.GenerateId(), jobObject));
         }
 
         public void DeleteObject(int jobObjectId)
@@ -52,7 +73,7 @@ namespace Backups.Services
             _jobObjects.Remove(requiredObject);
         }
 
-        public IReadOnlyList<RestorePoint> GetRestorePoints()
+        public List<RestorePoint> GetRestorePoints()
         {
             return _restorePoints;
         }
@@ -64,7 +85,7 @@ namespace Backups.Services
 
         public string GetJobName()
         {
-            return _name;
+            return Name;
         }
     }
 }

@@ -6,16 +6,14 @@ namespace Backups.Services
     {
         public SystemFileBuffer()
         {
-            const string bufferDirectoryName = @"C:\backups";
-            DirectoryName = bufferDirectoryName;
-            var directoryInfo = new DirectoryInfo(bufferDirectoryName);
+            var directoryInfo = new DirectoryInfo(DirectoryName);
             if (!directoryInfo.Exists)
             {
-                Directory.CreateDirectory(bufferDirectoryName);
+                Directory.CreateDirectory(DirectoryName);
             }
         }
 
-        public string DirectoryName { get; }
+        public static string DirectoryName { get; } = @"C:\backups";
 
         public void CreateDirectory(string path)
         {

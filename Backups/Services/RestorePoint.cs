@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace Backups.Services
 {
@@ -13,6 +14,12 @@ namespace Backups.Services
             _jobObjectStorages = new List<Storage>();
         }
 
+        public RestorePoint(DateTime date, List<Storage> jobObjectStorages)
+        {
+            Date = date;
+            _jobObjectStorages = jobObjectStorages;
+        }
+
         public DateTime Date { get; }
 
         public void AddStorage(Storage storage)
@@ -20,9 +27,19 @@ namespace Backups.Services
             _jobObjectStorages.Add(storage);
         }
 
-        public IReadOnlyList<Storage> GetJobObjectStorages()
+        public List<Storage> GetJobObjectStorages()
         {
             return _jobObjectStorages;
+        }
+
+        public string GetMessageForLogger()
+        {
+            string message = "Restore point created\nObjects:\n";
+            var objectsMessage = _jobObjectStorages
+                .Select(objects => objects.GetMessageForLogger())
+                .ToList();
+            string objectsTotalMessage = string.Join(Environment.NewLine, objectsMessage);
+            return message + objectsTotalMessage;
         }
     }
 }
