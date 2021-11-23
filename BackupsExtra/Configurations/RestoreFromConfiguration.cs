@@ -51,19 +51,16 @@ namespace BackupsExtra.Configurations
 
                     restorePoint.Elements("JobObject").ToList().ForEach(jobObject =>
                     {
-                        string jobObjectName = jobObject.FirstAttribute?.Value;
-                        string pathInRepository = jobObject.Element("JobPath").FirstAttribute?.Value;
-                        string zipPath = jobObject.Element("ZipPath").FirstAttribute?.Value;
+                        var jobObjectConfiguration = new JobObjectConfiguration(jobObject);
 
-                        bool zipExist = ExistZip(zipPath);
+                        bool zipExist = ExistZip(jobObjectConfiguration.ZipPath);
                         if (!zipExist)
                         {
-                            ZipFile.ExtractToDirectory(@$"{_repository.GetPath()}\{zipPath}", $@"{SystemFileBuffer.DirectoryName}\{zipPath}", true);
+                            ZipFile.ExtractToDirectory(@$"{_repository.GetPath()}\{jobObjectConfiguration.ZipPath}", $@"{SystemFileBuffer.DirectoryName}\{jobObjectConfiguration.ZipPath}", true);
                         }
 
-                        var jobObjectInService = new JobObject($@"{SystemFileBuffer.DirectoryName}\{pathInRepository}", jobObjectName);
-                        string originalPath = jobObject.Element("OriginalPath").FirstAttribute?.Value;
-                        jobObjectInService.ChangeOriginalPath(originalPath);
+                        var jobObjectInService = new JobObject($@"{SystemFileBuffer.DirectoryName}\{jobObjectConfiguration.Path}", jobObjectConfiguration.Name);
+                        jobObjectInService.ChangeOriginalPath(jobObjectConfiguration.OriginalPath);
                         restorePointInService.AddStorage(new Storage(jobObjectInService));
                     });
 
@@ -92,22 +89,17 @@ namespace BackupsExtra.Configurations
 
         private void AddCurrentObjectsToJob(XElement restorePoint, IBackupJob backupJob)
         {
-            string[] time = restorePoint.FirstAttribute?.Value.Split('-');
-            var restorePointInService = new RestorePoint(new DateTime(int.Parse(time[0]), int.Parse(time[1]), int.Parse(time[2])));
-
             restorePoint.Elements("JobObject").ToList().ForEach(jobObject =>
             {
-                string jobObjectName = jobObject.FirstAttribute?.Value;
-                string pathInRepository = jobObject.Element("JobPath").FirstAttribute?.Value;
-                string zipPath = jobObject.Element("ZipPath").FirstAttribute?.Value;
+                var jobObjectConfiguration = new JobObjectConfiguration(jobObject);
 
-                bool zipExist = ExistZip(zipPath);
+                bool zipExist = ExistZip(jobObjectConfiguration.ZipPath);
                 if (!zipExist)
                 {
-                    ZipFile.ExtractToDirectory(@$"{_repository.GetPath()}\{zipPath}", $@"{SystemFileBuffer.DirectoryName}\{zipPath}", true);
+                    ZipFile.ExtractToDirectory(@$"{_repository.GetPath()}\{jobObjectConfiguration.ZipPath}", $@"{SystemFileBuffer.DirectoryName}\{jobObjectConfiguration.ZipPath}", true);
                 }
 
-                var jobObjectInService = new JobObject($@"{SystemFileBuffer.DirectoryName}\{pathInRepository}", jobObjectName);
+                var jobObjectInService = new JobObject($@"{SystemFileBuffer.DirectoryName}\{jobObjectConfiguration.Path}", jobObjectConfiguration.Name);
                 backupJob.AddObject(jobObjectInService);
             });
         }

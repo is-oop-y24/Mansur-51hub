@@ -27,7 +27,7 @@ namespace BackupsExtra.Algorithms
             fileBuffer.CreateDirectory(jobDirectory);
             _jobConfiguration = new JobConfiguration(jobName, rootDirectory, pointsCount);
             GetConfigurationFile(rootDirectory, repository);
-            int index = GetIndex(repository, jobDirectory);
+            int index = new GetIndexAlgorithm().GetIndex(repository, jobDirectory);
 
             var restorePoint = new RestorePointConfiguration(DateTime.Now);
             jobObjects.ForEach(jobObject =>
@@ -81,21 +81,6 @@ namespace BackupsExtra.Algorithms
             }
 
             _configuration = new Configuration(rootDirectory);
-        }
-
-        private int GetIndex(IRepository repository, string jobDirectory)
-        {
-            int index = 1;
-            while (true)
-            {
-                string directoryPath = @$"{jobDirectory}\Restore_point_{index}";
-                if (!repository.ExistsDirectory(directoryPath))
-                {
-                    return index;
-                }
-
-                index++;
-            }
         }
     }
 }

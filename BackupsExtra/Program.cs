@@ -67,7 +67,7 @@ namespace BackupsExtra
 
         private static void Main()
         {
-            RestoreToDifferentLocation_SuccessfullyDone();
+            CreateJobs_RestoreFromConfiguration_SuccessfullyDone();
         }
     }
 }
