@@ -8,23 +8,24 @@ namespace Backups.Services
     public class BackupService : IBackupService
     {
         private readonly List<IBackupJob> _backupJobs;
-        private readonly string _rootDirectory;
 
-        public BackupService()
+        public BackupService(string rootDirectory)
         {
             _backupJobs = new List<IBackupJob>();
 
-            _rootDirectory = $"{DateTime.Now:yy-MM-dd}";
+            RootDirectory = rootDirectory ?? throw new ArgumentNullException(nameof(rootDirectory));
         }
 
-        public void CreateBackupJob(string jobName)
+        public string RootDirectory { get; }
+
+        public void CreateBackupJob(IBackupJob backupJob)
         {
-            if (_backupJobs.Any(p => p.GetJobName().Equals(jobName)))
+            if (_backupJobs.Any(p => p.GetJobName().Equals(backupJob.GetJobName())))
             {
-                throw new BackupsException($"Job with name {jobName} already exist");
+                throw new BackupsException($"Job with name {backupJob.GetJobName()} already exist");
             }
 
-            _backupJobs.Add(new BackupJob(jobName, _rootDirectory));
+            _backupJobs.Add(backupJob);
         }
 
         public IBackupJob GetBackupJob(string jobName)
@@ -36,6 +37,16 @@ namespace Backups.Services
             }
 
             return requiredBackupJob;
+        }
+
+        public List<IBackupJob> GetAllBackupJobs()
+        {
+            return _backupJobs;
+        }
+
+        string IBackupService.RootDirectory()
+        {
+            return RootDirectory;
         }
     }
 }

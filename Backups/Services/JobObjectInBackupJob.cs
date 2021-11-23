@@ -2,13 +2,13 @@
 {
     public class JobObjectInBackupJob
     {
-        public JobObjectInBackupJob(int id, IJobObject jobObject)
+        public JobObjectInBackupJob(int id, JobObject jobObject)
         {
             Id = id;
             JobObject = jobObject;
         }
 
         public int Id { get; }
-        public IJobObject JobObject { get; }
+        public JobObject JobObject { get; }
     }
 }

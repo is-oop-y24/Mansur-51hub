@@ -2,11 +2,16 @@
 {
     public class Storage
     {
-        public Storage(IJobObject jobObject)
+        public Storage(JobObject jobObject)
         {
             JobObject = jobObject;
         }
 
-        public IJobObject JobObject { get; }
+        public JobObject JobObject { get; }
+
+        public string GetMessageForLogger()
+        {
+            return $"Object name: {JobObject.GetObjectName()}";
+        }
     }
 }

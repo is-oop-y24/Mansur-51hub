@@ -12,6 +12,7 @@ namespace Backups.Services
 
         public JobObject(string path, string name)
         {
+            OriginalPath = path;
             var fileInfo = new FileInfo(path);
             if (!fileInfo.Exists)
             {
@@ -25,6 +26,7 @@ namespace Backups.Services
             fstream.Close();
         }
 
+        public string OriginalPath { get; private set; }
         public IReadOnlyCollection<byte> GetBytes()
         {
             return Array.AsReadOnly(_bytes);
@@ -33,6 +35,11 @@ namespace Backups.Services
         public string GetObjectName()
         {
             return _name;
+        }
+
+        public void ChangeOriginalPath(string path)
+        {
+            OriginalPath = path;
         }
     }
 }
